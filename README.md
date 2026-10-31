@@ -1,14 +1,18 @@
 # Partner Web (Hello! Poland)
 
+**Dokumentacja techniczna:** [architektura, konfiguracja, build i referencja frontendu](docs/technical.md).
+
 React / Next.js aplikacja webowa dla **Partnera** w ekosystemie **Hello! Poland**.
 
-Pełna dokumentacja runtime, zgodna z aktualnym wdrożeniem TST (Docker + nginx + CONFIG_PATH).
+Przegląd lokalnego kodu: **31.10.2026**. Aktualny opis architektury, konfiguracji i pracy lokalnej: [przewodnik modułu](docs/development.md). [Mapa systemu](https://github.com/cig-hellopoland/hellopoland-docs/blob/main/README.md) prowadzi do repozytorium dokumentacji na GitHubie.
+
+Poniższe przykłady obrazu, adresów IP, nginx i uruchomienia kontenera zachowują wcześniejszą instrukcję TST. Nie zostały ponownie sprawdzone na serwerze i wymagają potwierdzenia przed użyciem.
 
 ---
 
 ## Overview
 
-Partner Web to aplikacja **Next.js (Node.js)** uruchamiana w **kontenerze Docker**, konfigurowana **wyłącznie przez plik `config.json` wskazywany zmienną `CONFIG_PATH`**.
+Partner Web to aplikacja **Next.js (Node.js)**. `next.config.js` czyta plik wskazany przez `CONFIG_PATH`, a gdy zmiennej nie ma, używa `./config/develop.config.js`. Dockerfile ustawia domyślnie `/data/etc/config.json`; przykład TST poniżej jawnie nadpisuje tę ścieżkę.
 
 Aplikacja:
 - komunikuje się z **HelloPoland Backend (HPL)** przez REST API,
@@ -31,7 +35,7 @@ Aplikacja:
 /views              – implementacje widoków
 ```
 
-> ⚠️ Runtime **nie używa katalogu `/config`** z repozytorium.
+> Przy ustawionym `CONFIG_PATH` plik zewnętrzny zastępuje domyślny plik developerski. Bez tej zmiennej kod korzysta z katalogu `config`.
 
 ---
 
@@ -39,7 +43,7 @@ Aplikacja:
 
 ### Zasada
 
-Konfiguracja runtime **nie jest bundlowana** w obrazie Dockera.
+Konfiguracja jest ładowana przez `next.config.js` do `serverRuntimeConfig` i `publicRuntimeConfig`. Sekcja publiczna jest dostępna klientowi. Nie zakładamy, że dowolną konfigurację można podmienić po buildzie bez sprawdzenia wyniku; szczegóły są w przewodniku modułu.
 
 Aplikacja **czyta ją tylko przy starcie** z pliku JSON wskazanego przez:
 
@@ -140,11 +144,10 @@ server {
 
 ## SSL
 
-Na TST pracujemy na **HTTP (IP)**.  
-SSL zostanie dodany po pojawieniu się domen TST.
+Wcześniejsza instrukcja opisywała TST przez **HTTP (IP)**. README WordPressa wskazuje też domenę `t1.partner.hello-poland.pl`. Aktualny adres i terminację TLS trzeba potwierdzić w konfiguracji serwera; ten przegląd ich nie weryfikował.
 
 ---
 
 ## Status
 
-✔ Partner Web działa poprawnie na TST
+Historyczny opis TST zachowano powyżej. Obecne działanie TST nie było testowane podczas przeglądu dokumentacji.
